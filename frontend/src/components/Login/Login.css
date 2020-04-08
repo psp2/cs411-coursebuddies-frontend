@@ -1,0 +1,36 @@
+.Login {
+  font-family: "Roboto", sans-serif;
+  font-size: 1em;
+  color: black;
+  background-color: #51d0de;
+}
+
+.FormSection {
+  height: 30vh;
+  width: 50vw;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  margin: auto;
+  background-color: #fff5d7;
+}
+
+.LoginContent {
+  width: 20vw;
+  font-size: 0.5em;
+  display: flex;
+  flex-direction: column;
+  margin: auto;
+}
+
+.SubmitButton {
+  width: 10vw;
+  font-size: 0.5em;
+  background-color: lightblue;
+  margin: auto;
+}
+
+.MiddleSection {
+  font-size: 0.5em;
+  margin: 0.5em;
+}
