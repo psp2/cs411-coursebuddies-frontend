@@ -1,6 +1,13 @@
 import React, { useState } from "react";
 import "./Login.css";
 
+import Button from 'react-bootstrap/Button';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
+import Jumbotron from 'react-bootstrap/Jumbotron';
+import Form from 'react-bootstrap/Form';
+import Container from 'react-bootstrap/Container';
+
 function Login(props) {
   // Implemented without Auth / Security. Would need to be added for real application.
   const [loginName, setLoginName] = useState("");
@@ -43,56 +50,66 @@ function Login(props) {
   }
 
   return (
-    <div className="Login">
-      <div className="MiddleSection"> Log In </div>
+    <div>
+      <Jumbotron className = "Login">
+        <Container fluid={true}>
+        <div>
+          <h1>
+            Login
+          </h1>
+        </div>
+        <Row>
+          <Col md={{ span: 6, offset: 3 }}>
+            <Form>
+              <Form.Group controlId="logInUsername">
+                <Form.Label>Username</Form.Label>
+                <Form.Control type="text" name="login_user" onChange={handleLoginUsernameChange}placeholder="Username " />
+                <Form.Text className="text-muted">
+                </Form.Text>
+              </Form.Group>
 
-      <div className="FormSection">
-        <div className="LoginContent">
-          <label>
-            Username:
-            <input
-              type="text"
-              name="login_user"
-              onChange={handleLoginUsernameChange}
-            />
-          </label>
-          <label>
-            Password:
-            <input
-              type="text"
-              name="login_pw"
-              onChange={handleLoginPasswordChange}
-            />
-          </label>
+              <Form.Group controlId="logInPassword">
+                <Form.Label>Password</Form.Label>
+                <Form.Control type="password" name="login_pw" onChange={handleLoginPasswordChange}placeholder="Password" />
+              </Form.Group>
+              <Button variant="primary" type="submit" onClick={handleLoginSubmit} className="SubmitButton">
+                Submit
+              </Button>
+            </Form>
+          </Col>
+        </Row>
+        </Container>
+      </Jumbotron>
+
+      <Jumbotron className = "SignUp">
+        <Container fluid={true}>
+        <div>
+          <h1>
+            Sign Up
+          </h1>
         </div>
-        <button onClick={handleLoginSubmit} className="SubmitButton">
-          Submit
-        </button>
-      </div>
-      <div className="MiddleSection"> Sign Up </div>
-      <div className="FormSection">
-        <div className="LoginContent">
-          <label>
-            Username:
-            <input
-              type="text"
-              name="signup_user"
-              onChange={handleSignupUsernameChange}
-            />
-          </label>
-          <label>
-            Password:
-            <input
-              type="text"
-              name="signup_pw"
-              onChange={handleSignupPasswordChange}
-            />
-          </label>
-        </div>
-        <button onClick={handleSignupSubmit} className="SubmitButton">
-          Submit
-        </button>
-      </div>
+        <Row>
+          <Col md={{ span: 6, offset: 3 }}>
+            <Form>
+              <Form.Group controlId="signUpUsername">
+                <Form.Label>Username</Form.Label>
+                <Form.Control type="text" name="signup_user" onChange={handleSignupUsernameChange} placeholder = "Username"/>
+                <Form.Text className="text-muted">
+                </Form.Text>
+              </Form.Group>
+
+              <Form.Group controlId="signUpPassword">
+                <Form.Label>Password</Form.Label>
+                <Form.Control type="text" name="signup_pw" onChange={handleSignupPasswordChange} placeholder = "Password"/>
+              </Form.Group>
+              <Button variant="primary" type="submit" onClick={handleSignupSubmit} className="SubmitButton">
+                Submit
+              </Button>
+            </Form>
+          </Col>
+        </Row>
+        </Container>
+      </Jumbotron>
     </div>
   );
 }
