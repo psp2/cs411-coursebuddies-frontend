@@ -8,18 +8,22 @@ import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 
 import axios from "axios";
-import { USER_RATING_API_URL } from "../../constants";
+import { PROF_USER_RATING_API_URL } from "../../constants";
+import { ADD_USER_RATING_API_URL } from "../../constants";
+import { UPDATE_USER_RATING_API_URL } from "../../constants";
+import { DELETE_USER_RATING_API_URL } from "../../constants";
 
 function SearchInfoSection(props) {
   const [userRating, setUserRating] = useState(0);
   const [avgRating, setAvgRating] = useState(0);
+  const [myRating, setMyRating] = useState(null);
 
   var ratings_count = 0;
   var total_val = 0;
 
   function getRatings() {
     axios
-      .get(USER_RATING_API_URL, {
+      .get(PROF_USER_RATING_API_URL, {
         params: {
           crn: props.section["crn"],
         },
@@ -29,6 +33,9 @@ function SearchInfoSection(props) {
           if (response.status == 200) {
             ratings_count += response.data.length;
             for (var item in response.data) {
+              if (response.data[item]["username"] == props.username) {
+                setMyRating(response.data[item]["professor_ratings"]);
+              }
               total_val += response.data[item]["professor_ratings"];
             }
             setAvgRating(total_val / ratings_count);
@@ -40,13 +47,15 @@ function SearchInfoSection(props) {
       );
   }
 
+  const avg_rating = getRatings();
+
   function changeUserRating(event) {
     setUserRating(event.target.value);
   }
 
   function addRating() {
     axios
-      .post(USER_RATING_API_URL, {
+      .post(ADD_USER_RATING_API_URL, {
         username: props.username,
         crn: props.section["crn"],
         professor_ratings: userRating,
@@ -54,6 +63,7 @@ function SearchInfoSection(props) {
       })
       .then(
         (response) => {
+          console.log(response);
           if (response.status == 200) {
             getRatings();
           }
@@ -64,7 +74,48 @@ function SearchInfoSection(props) {
       );
   }
 
-  const avg_rating = getRatings();
+  function updateRating() {
+    axios
+      .get(UPDATE_USER_RATING_API_URL, {
+        params: {
+          username: props.username,
+          crn: props.section["crn"],
+          rating: userRating,
+        },
+      })
+      .then(
+        (response) => {
+          console.log(response);
+          if (response.status == 200) {
+            getRatings();
+          }
+        },
+        (error) => {
+          console.log(error);
+        }
+      );
+  }
+
+  function deleteRating() {
+    axios
+      .get(DELETE_USER_RATING_API_URL, {
+        params: {
+          username: props.username,
+          crn: props.section["crn"],
+        },
+      })
+      .then(
+        (response) => {
+          if (response.status == 200) {
+            getRatings();
+            setMyRating(null);
+          }
+        },
+        (error) => {
+          console.log(error);
+        }
+      );
+  }
 
   return (
     <div>
@@ -86,13 +137,36 @@ function SearchInfoSection(props) {
             </Col>
             <Col className="block-example border-left border-dark ">
               <h3>Professor Rating: </h3> <p align="center"> {avgRating} </p>
-              <Form.Control
-                type="text"
-                name="user_rating"
-                onChange={changeUserRating}
-                placeholder="1-5"
-              />
-              <Button onClick={addRating}>SUBMIT</Button>
+              {!myRating && (
+                <div>
+                  <Form.Control
+                    type="text"
+                    name="user_rating"
+                    onChange={changeUserRating}
+                    placeholder="1-5"
+                  />
+                  <Button onClick={addRating}>SUBMIT</Button>
+                </div>
+              )}
+              {myRating && (
+                <div>
+                  <div>
+                    <b> My Rating: </b> {myRating}
+                  </div>
+                  <div>
+                    <Form.Control
+                      type="text"
+                      name="user_rating"
+                      onChange={changeUserRating}
+                      placeholder="1-5"
+                    />
+                    <Button onClick={updateRating}>UPDATE MY RATING</Button>
+                  </div>
+                  <div>
+                    <Button onClick={deleteRating}>DELETE MY RATING</Button>
+                  </div>
+                </div>
+              )}
             </Col>
             <Col className="block-example border-left border-dark">
               <h3>Average GPA: </h3>{" "}
