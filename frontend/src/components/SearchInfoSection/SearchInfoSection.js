@@ -12,6 +12,7 @@ import { PROF_USER_RATING_API_URL } from "../../constants";
 import { ADD_USER_RATING_API_URL } from "../../constants";
 import { UPDATE_USER_RATING_API_URL } from "../../constants";
 import { DELETE_USER_RATING_API_URL } from "../../constants";
+import { USER_RATING_API_URL } from "../../constants";
 
 function SearchInfoSection(props) {
   const [userRating, setUserRating] = useState(0);
@@ -25,20 +26,21 @@ function SearchInfoSection(props) {
     axios
       .get(PROF_USER_RATING_API_URL, {
         params: {
+          username: props.username,
           crn: props.section["crn"],
         },
       })
       .then(
         (response) => {
           if (response.status == 200) {
-            ratings_count += response.data.length;
-            for (var item in response.data) {
-              if (response.data[item]["username"] == props.username) {
-                setMyRating(response.data[item]["professor_ratings"]);
-              }
-              total_val += response.data[item]["professor_ratings"];
-            }
-            setAvgRating(total_val / ratings_count);
+            //ratings_count += response.data.length;
+            //for (var item in response.data) {
+              //if (response.data[item]["username"] == props.username) {
+              //  setMyRating(response.data[item]["professor_ratings"]);
+              //}
+              //total_val += response.data[item]["professor_ratings"];
+            //}
+            setAvgRating(response.data);
           }
         },
         (error) => {
@@ -47,7 +49,35 @@ function SearchInfoSection(props) {
       );
   }
 
-  const avg_rating = getRatings();
+  function getMyRatings() {
+    axios
+      .get(USER_RATING_API_URL, {
+        params: {
+          username: props.username,
+          crn: props.section["crn"],
+        },
+      })
+      .then(
+        (response) => {
+          if (response.status == 200) {
+            //ratings_count += response.data.length;
+            //for (var item in response.data) {
+              //if (response.data[item]["username"] == props.username) {
+              //  setMyRating(response.data[item]["professor_ratings"]);
+              //}
+              //total_val += response.data[item]["professor_ratings"];
+            //}
+            setMyRating(response.data);
+          }
+        },
+        (error) => {
+          console.log(error);
+        }
+      );
+  }
+
+  getRatings();
+  getMyRatings();
 
   function changeUserRating(event) {
     setUserRating(event.target.value);
@@ -65,7 +95,8 @@ function SearchInfoSection(props) {
         (response) => {
           console.log(response);
           if (response.status == 200) {
-            getRatings();
+            //getRatings();
+            getMyRatings();
           }
         },
         (error) => {
@@ -87,7 +118,8 @@ function SearchInfoSection(props) {
         (response) => {
           console.log(response);
           if (response.status == 200) {
-            getRatings();
+            //getRatings();
+            getMyRatings();
           }
         },
         (error) => {
@@ -107,7 +139,7 @@ function SearchInfoSection(props) {
       .then(
         (response) => {
           if (response.status == 200) {
-            getRatings();
+            //getRatings();
             setMyRating(null);
           }
         },
