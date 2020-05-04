@@ -77,6 +77,25 @@ function SearchInfoSection(props) {
       );
   }
 
+  function getBuddy() {
+    axios
+      .get(STUDY_BUDDY_API_URL, {
+        params: {
+
+        },
+      })
+      .then(
+        (response) => {
+          if (response.status == 200) {
+
+          }
+        },
+        (error) => {
+          console.log(error);
+        }
+      );
+  }
+
 
   getRatings();
   getMyRatings();
@@ -102,6 +121,7 @@ function SearchInfoSection(props) {
           if (response.status == 201) {
             getRatings();
             getMyRatings();
+            getBuddy();
           }
         },
         (error) => {
