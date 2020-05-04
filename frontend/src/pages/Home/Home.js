@@ -15,18 +15,22 @@ import Container from "react-bootstrap/Container";
 
 import Login from "../../components/Login/Login";
 import Search from "../../components/Search/Search";
+import FindBuddies from "../../components/FindBuddies/FindBuddies";
 
 function Home() {
   const [searchMode, setSearchMode] = useState(false);
+  const [buddiesMode, setBuddiesMode] = useState(false);
   const [loggedIn, setLoggedIn] = useState(false);
   const [user, setUser] = useState(null);
 
   function handleSearchClick() {
+    setBuddiesMode(false);
     setSearchMode(true);
   }
 
   function handleStudyBuddiesClick() {
-    console.log("Handle Study Buddies... Later!");
+    setSearchMode(false);
+    setBuddiesMode(true);
   }
 
   return (
@@ -43,15 +47,16 @@ function Home() {
 
       <br />
 
-      {!searchMode && (
+      {!searchMode && !buddiesMode && (
         <div className="Home">
           {loggedIn && <div></div>}
           {!loggedIn && <Login signIn={setLoggedIn} setUsername={setUser} />}
         </div>
       )}
       {searchMode && <Search validUser={loggedIn} name={user} />}
+      {buddiesMode && <FindBuddies validUser={loggedIn} name={user} />}
 
-      <Container fluid>
+      {loggedIn && <Container fluid>
         <Row className="justify-content-md-center">
           <CardDeck>
             <Card className="searchButton" style={{ width: "18rem" }}>
@@ -88,7 +93,7 @@ function Home() {
             </Card>
           </CardDeck>
         </Row>
-      </Container>
+      </Container>}
     </div>
   );
 }
