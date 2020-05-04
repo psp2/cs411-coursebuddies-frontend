@@ -13,6 +13,7 @@ import { ADD_USER_RATING_API_URL } from "../../constants";
 import { UPDATE_USER_RATING_API_URL } from "../../constants";
 import { DELETE_USER_RATING_API_URL } from "../../constants";
 import { USER_RATING_API_URL } from "../../constants";
+import { STUDY_BUDDY_API_URL } from "../../constants";
 
 function SearchInfoSection(props) {
   const [userRating, setUserRating] = useState(0);
@@ -76,8 +77,10 @@ function SearchInfoSection(props) {
       );
   }
 
+
   getRatings();
   getMyRatings();
+  
 
   function changeUserRating(event) {
     setUserRating(event.target.value);
@@ -86,16 +89,18 @@ function SearchInfoSection(props) {
   function addRating() {
     axios
       .post(ADD_USER_RATING_API_URL, {
-        username: props.username,
-        crn: props.section["crn"],
-        professor_ratings: userRating,
-        difficulty: 3,
+        //params: {
+          username: props.username,
+          crn: props.section["crn"],
+          professor_ratings: userRating,
+          difficulty: 3,
+        //},
       })
       .then(
         (response) => {
           console.log(response);
-          if (response.status == 200) {
-            //getRatings();
+          if (response.status == 201) {
+            getRatings();
             getMyRatings();
           }
         },
@@ -117,8 +122,8 @@ function SearchInfoSection(props) {
       .then(
         (response) => {
           console.log(response);
-          if (response.status == 200) {
-            //getRatings();
+          if (response.status == 201) {
+            getRatings();
             getMyRatings();
           }
         },
@@ -138,8 +143,8 @@ function SearchInfoSection(props) {
       })
       .then(
         (response) => {
-          if (response.status == 200) {
-            //getRatings();
+          if (response.status == 201) {
+            getRatings();
             setMyRating(null);
           }
         },
