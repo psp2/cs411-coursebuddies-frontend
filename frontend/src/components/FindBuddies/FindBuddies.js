@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
-import SearchInfo from "../SearchInfo/SearchInfo";
+import BuddyInfo from "../BuddyInfo/BuddyInfo";
+import PersonalInfoSection from "../PersonalInfoSection/PersonalInfoSection";
 
 import Button from "react-bootstrap/Button";
 import Row from "react-bootstrap/Row";
@@ -11,7 +12,9 @@ import Container from "react-bootstrap/Container";
 import Dropdown from "react-bootstrap/Dropdown";
 
 import axios from "axios";
-import { STUDY_GROUP_API_URL } from "../../constants";
+// import { STUDY_GROUP_API_URL } from "../../constants";
+import { STUDY_BUDDY_API_URL } from "../../constants";
+import { USER_REGISTRATION_API } from "../../constants";
 
 function FindBuddies(props) {
     const [email, setEmail] = useState("");
@@ -28,11 +31,17 @@ function FindBuddies(props) {
         }
     );
     const [infoFilled, setInfoFilled] = useState(false);
+    const [courseForBuddySearch, setCourseForBuddySearch] = useState(null);
     const [preferences, setPreferences] = useState({
       1: null,
       2: null, 
       3: null
     });
+    const [studyBuddyResults, setStudyBuddyResults] = useState();
+
+    useEffect(() => {
+      displayCourses();
+    }, []);
 
     function handleEmailChange(event) {
         setEmail(event.target.value);
@@ -58,6 +67,41 @@ function FindBuddies(props) {
         8: "Finance",
         9: "Microcellular Biology",
         10: "Music"
+    }
+
+    function displayCourses() {
+      console.log(props.name);
+      axios
+        .get(USER_REGISTRATION_API, {
+          params: {
+            username: props.name,
+          },
+        })
+        .then(
+          (response) => {
+            if (response.status == 200 && response.data.length > 0) {
+              console.log("Getting CRN's for: ", props.name);
+              console.log(response.data[0]);
+
+              setMajor(response.data[0].major);
+              setEmail(response.data[0].email);
+              setGrade(response.data[0].year);
+              console.log(response.data[0].email);
+
+              for(var i = 1; i <= 6 && i <= response.data.length; i++) {
+                let tempCourses = courses;
+                tempCourses[i] = response.data[i-1].crn;
+                setCourses(tempCourses);
+                console.log("CRN ", i, " :", courses[i]);
+              }
+              setInfoFilled(true);
+            }
+          },
+          (error) => {
+            console.log("Failed getting CRN's for: ", props.name)
+            console.log(error);
+          }
+        );
     }
 
     function selectCourse1(event) {
@@ -91,6 +135,10 @@ function FindBuddies(props) {
         setCourses(tempCourses);
     }
 
+    function selectCourseForBuddySearch(eventKey, event) {
+      setCourseForBuddySearch(eventKey);
+    }
+
     function selectPreference1(eventKey, event) {
       let tempPreferences = preferences;
       tempPreferences[1] = eventKey;
@@ -114,7 +162,7 @@ function FindBuddies(props) {
       for (var key in courses) {
         if (courses[key] && courses[key].length > 0) {
           axios
-            .post(STUDY_GROUP_API_URL, {
+            .post(USER_REGISTRATION_API, {
               username: props.name,
               email: email,
               year: grade,
@@ -135,11 +183,34 @@ function FindBuddies(props) {
     }
 
     function handleFindBuddiesSubmit() {
-      for (var key in courses) {
-        if (courses[key] && courses[key].length > 0) {
-          // Temporary
-          console.log(key);
-        }
+      if (courseForBuddySearch && courses[courseForBuddySearch] && preferences[1] && preferences[2] && preferences[3]) {
+        let username = props.name;
+        let crn = parseInt(courses[courseForBuddySearch]);
+        console.log(courseForBuddySearch);
+        console.log(courses);
+        console.log(crn);
+        axios
+          .get(STUDY_BUDDY_API_URL, {
+            params: {
+              username: username,
+              crn: crn,
+              first_pref: preferences[1],
+              second_pref: preferences[2],
+              third_pref: preferences[3],
+            },
+          })
+          .then(
+            (response) => {
+              console.log(response.status);
+              if (response.status == 200) {
+                console.log(response.data);
+                setStudyBuddyResults(response.data);
+              }
+            },
+            (error) => {
+              console.log(error);
+            }
+          );
       }
     }
 
@@ -147,9 +218,10 @@ function FindBuddies(props) {
         <div className="Search">
           <Container fluid>
             <h1>Find Study Buddies</h1>
-            {props.name && <h2>Your Info ({props.name}): </h2>}
-            {!props.name && <h2>Your Info: </h2>}
-            <Row className="justify-content-md-center">
+            {infoFilled && <h2>Your Info ({props.name}): </h2>}
+            {infoFilled && <PersonalInfoSection username={props.name} email={email} major={major} grade={grade} courses={courses} />}
+            {!infoFilled && <h2>Your Info ({props.name}): </h2>}
+            {!infoFilled && <Row className="justify-content-md-center">
               <Form>
                 <Form.Row>
                   <Dropdown onSelect={selectGrade}>
@@ -191,8 +263,8 @@ function FindBuddies(props) {
                   </Dropdown>
                 </Form.Row>
               </Form>
-            </Row>
-            <Row className="justify-content-md-center">
+            </Row>}
+            {!infoFilled && <Row className="justify-content-md-center">
                 <Form>
                     <Form.Row>
                         <Form.Group controlId="formGridEmail">
@@ -245,8 +317,8 @@ function FindBuddies(props) {
                         </Form.Group>
                     </Form.Row>
                 </Form>
-            </Row>
-            <Row className="justify-content-md-center">
+            </Row>}
+            {!infoFilled && <Row className="justify-content-md-center">
               <Button
                 onClick={handleInfoSubmit}
                 className="SearchButton"
@@ -256,17 +328,41 @@ function FindBuddies(props) {
                 {" "}
                 Submit Your Info{" "}
               </Button>
-            </Row>
-            {infoFilled && <h2>Rank Preferences by Priority: </h2>}
+            </Row>}
             {infoFilled && <Row className="justify-content-md-center">
+              <Button
+                onClick={() => setInfoFilled(false)}
+                className="SearchButton"
+                variant="primary"
+                type="submit"
+              >
+                {" "}
+                Edit Your Info{" "}
+              </Button>
+            </Row>}
+            {infoFilled && <h2>Select Class and Rank Preferences: </h2>}
+            {infoFilled && <Row className="justify-content-md-center">
+              <Dropdown onSelect={selectCourseForBuddySearch}>
+                <Dropdown.Toggle variant="success" id="dropdown-basic">
+                  Target Class:
+                </Dropdown.Toggle>
+                <Dropdown.Menu>
+                  <Dropdown.Item eventKey={1}>CRN 1</Dropdown.Item>
+                  <Dropdown.Item eventKey={2}>CRN 2</Dropdown.Item>
+                  <Dropdown.Item eventKey={3}>CRN 3</Dropdown.Item>
+                  <Dropdown.Item eventKey={4}>CRN 4</Dropdown.Item>
+                  <Dropdown.Item eventKey={5}>CRN 5</Dropdown.Item>
+                  <Dropdown.Item eventKey={6}>CRN 6</Dropdown.Item>
+                </Dropdown.Menu>
+              </Dropdown>
               <Dropdown onSelect={selectPreference1}>
                 <Dropdown.Toggle variant="success" id="dropdown-basic">
                   Preference 1:
                 </Dropdown.Toggle>
                 <Dropdown.Menu>
-                  <Dropdown.Item eventKey="Grade">Grade</Dropdown.Item>
+                  <Dropdown.Item eventKey="Year">Year</Dropdown.Item>
                   <Dropdown.Item eventKey="Major">Major</Dropdown.Item>
-                  <Dropdown.Item eventKey="CRN">CRN</Dropdown.Item>
+                  <Dropdown.Item eventKey="CRN">Class</Dropdown.Item>
                 </Dropdown.Menu>
               </Dropdown>
               <Dropdown onSelect={selectPreference2}>
@@ -274,9 +370,9 @@ function FindBuddies(props) {
                   Preference 2:
                 </Dropdown.Toggle>
                 <Dropdown.Menu>
-                  <Dropdown.Item eventKey="Grade">Grade</Dropdown.Item>
+                  <Dropdown.Item eventKey="Year">Year</Dropdown.Item>
                   <Dropdown.Item eventKey="Major">Major</Dropdown.Item>
-                  <Dropdown.Item eventKey="CRN">CRN</Dropdown.Item>
+                  <Dropdown.Item eventKey="CRN">Class</Dropdown.Item>
                 </Dropdown.Menu>
               </Dropdown>
               <Dropdown onSelect={selectPreference3}>
@@ -284,9 +380,9 @@ function FindBuddies(props) {
                   Preference 3:
                 </Dropdown.Toggle>
                 <Dropdown.Menu>
-                  <Dropdown.Item eventKey="Grade">Grade</Dropdown.Item>
+                  <Dropdown.Item eventKey="Year">Year</Dropdown.Item>
                   <Dropdown.Item eventKey="Major">Major</Dropdown.Item>
-                  <Dropdown.Item eventKey="CRN">CRN</Dropdown.Item>
+                  <Dropdown.Item eventKey="CRN">Class</Dropdown.Item>
                 </Dropdown.Menu>
               </Dropdown>
             </Row>}
@@ -301,6 +397,7 @@ function FindBuddies(props) {
                 Find Study Buddies!{" "}
               </Button>
             </Row>}
+            {studyBuddyResults && infoFilled && <BuddyInfo results={studyBuddyResults}/>}
           </Container>
           <br />
         </div>
