@@ -12,7 +12,7 @@ import Container from "react-bootstrap/Container";
 import Dropdown from "react-bootstrap/Dropdown";
 
 import axios from "axios";
-// import { STUDY_GROUP_API_URL } from "../../constants";
+//import { STUDY_GROUP_API_URL } from "../../constants";
 import { STUDY_BUDDY_API_URL } from "../../constants";
 import { USER_REGISTRATION_API } from "../../constants";
 
@@ -30,6 +30,16 @@ function FindBuddies(props) {
             6: null
         }
     );
+    const [courseName, setCourseName] = useState(
+      {
+          1: null,
+          2: null,
+          3: null,
+          4: null,
+          5: null,
+          6: null
+      }
+  );
     const [infoFilled, setInfoFilled] = useState(false);
     const [courseForBuddySearch, setCourseForBuddySearch] = useState(null);
     const [preferences, setPreferences] = useState({
@@ -92,7 +102,9 @@ function FindBuddies(props) {
                 let tempCourses = courses;
                 tempCourses[i] = response.data[i-1].crn;
                 setCourses(tempCourses);
-                console.log("CRN ", i, " :", courses[i]);
+                let tempCourseName = courseName;
+                tempCourseName[i] = response.data[i-1].subject + parseInt(response.data[i-1].course);
+                setCourseName(tempCourseName);
               }
               setInfoFilled(true);
             }
@@ -347,12 +359,12 @@ function FindBuddies(props) {
                   Target Class:
                 </Dropdown.Toggle>
                 <Dropdown.Menu>
-                  <Dropdown.Item eventKey={1}>CRN 1</Dropdown.Item>
-                  <Dropdown.Item eventKey={2}>CRN 2</Dropdown.Item>
-                  <Dropdown.Item eventKey={3}>CRN 3</Dropdown.Item>
-                  <Dropdown.Item eventKey={4}>CRN 4</Dropdown.Item>
-                  <Dropdown.Item eventKey={5}>CRN 5</Dropdown.Item>
-                  <Dropdown.Item eventKey={6}>CRN 6</Dropdown.Item>
+                  <Dropdown.Item eventKey={1}>{courses[1]} {courseName[1]}</Dropdown.Item>
+                  <Dropdown.Item eventKey={2}>{courses[2]} {courseName[2]}</Dropdown.Item>
+                  <Dropdown.Item eventKey={3}>{courses[3]} {courseName[3]}</Dropdown.Item>
+                  <Dropdown.Item eventKey={4}>{courses[4]} {courseName[4]}</Dropdown.Item>
+                  <Dropdown.Item eventKey={5}>{courses[5]} {courseName[5]}</Dropdown.Item>
+                  <Dropdown.Item eventKey={6}>{courses[6]} {courseName[6]}</Dropdown.Item>
                 </Dropdown.Menu>
               </Dropdown>
               <Dropdown onSelect={selectPreference1}>
