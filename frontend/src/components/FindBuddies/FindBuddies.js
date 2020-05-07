@@ -67,20 +67,38 @@ function FindBuddies(props) {
 
     const majorList = {
         0: "Accounting",
-        1: "Biology",
-        2: "Business Administration",
-        3: "Chemistry",
-        4: "CS",
-        5: "CS + Math",
-        6: "CS + Statistics",
-        7: "Economics",
-        8: "Finance",
-        9: "Microcellular Biology",
-        10: "Music"
+        1: "Actuarial Science",
+        2: "Advertising",
+        3: "Aerospace Engineering",
+        4: "African American Studies",
+        5: "Animal Sciences",
+        6: "Anthropology",
+        7: "Biology",
+        8: "Business Administration",
+        9: "Chemistry",
+        10: "Crop Sciences",
+        11: "CS",
+        12: "CS + Astronomy",
+        13: "CS + Chemistry",
+        14: "CS + Linguistics",
+        15: "CS + Math",
+        16: "CS + Statistics",
+        17: "Dance",
+        18: "Economics",
+        19: "Finance",
+        20: "IB",
+        21: "Mathematics",
+        22: "Microcellular Biology",
+        23: "Music",
+        24: "Physics",
+        25: "Psychology",
+        26: "Religion",
+        27: "Sociology",
+        28: "Statistics",
+        29: "Urban Studies & Planning"
     }
 
     function displayCourses() {
-      console.log(props.name);
       axios
         .get(USER_REGISTRATION_API, {
           params: {
@@ -90,14 +108,9 @@ function FindBuddies(props) {
         .then(
           (response) => {
             if (response.status == 200 && response.data.length > 0) {
-              console.log("Getting CRN's for: ", props.name);
-              console.log(response.data[0]);
-
               setMajor(response.data[0].major);
               setEmail(response.data[0].email);
               setGrade(response.data[0].year);
-              console.log(response.data[0].email);
-
               for(var i = 1; i <= 6 && i <= response.data.length; i++) {
                 let tempCourses = courses;
                 tempCourses[i] = response.data[i-1].crn;
@@ -110,7 +123,6 @@ function FindBuddies(props) {
             }
           },
           (error) => {
-            console.log("Failed getting CRN's for: ", props.name)
             console.log(error);
           }
         );
@@ -183,7 +195,6 @@ function FindBuddies(props) {
             })
             .then(
               (response) => {
-                console.log(response.status)
                 setInfoFilled(true);
               },
               (error) => {
@@ -198,9 +209,6 @@ function FindBuddies(props) {
       if (courseForBuddySearch && courses[courseForBuddySearch] && preferences[1] && preferences[2] && preferences[3]) {
         let username = props.name;
         let crn = parseInt(courses[courseForBuddySearch]);
-        console.log(courseForBuddySearch);
-        console.log(courses);
-        console.log(crn);
         axios
           .get(STUDY_BUDDY_API_URL, {
             params: {
@@ -213,9 +221,7 @@ function FindBuddies(props) {
           })
           .then(
             (response) => {
-              console.log(response.status);
               if (response.status == 200) {
-                console.log(response.data);
                 setStudyBuddyResults(response.data);
               }
             },
@@ -271,6 +277,26 @@ function FindBuddies(props) {
                         <Dropdown.Item eventKey={majorList[7]}>{majorList[7]}</Dropdown.Item>
                         <Dropdown.Item eventKey={majorList[8]}>{majorList[8]}</Dropdown.Item>
                         <Dropdown.Item eventKey={majorList[9]}>{majorList[9]}</Dropdown.Item>
+                        <Dropdown.Item eventKey={majorList[10]}>{majorList[10]}</Dropdown.Item>
+                        <Dropdown.Item eventKey={majorList[11]}>{majorList[11]}</Dropdown.Item>
+                        <Dropdown.Item eventKey={majorList[12]}>{majorList[12]}</Dropdown.Item>
+                        <Dropdown.Item eventKey={majorList[13]}>{majorList[13]}</Dropdown.Item>
+                        <Dropdown.Item eventKey={majorList[14]}>{majorList[14]}</Dropdown.Item>
+                        <Dropdown.Item eventKey={majorList[15]}>{majorList[15]}</Dropdown.Item>
+                        <Dropdown.Item eventKey={majorList[16]}>{majorList[16]}</Dropdown.Item>
+                        <Dropdown.Item eventKey={majorList[17]}>{majorList[17]}</Dropdown.Item>
+                        <Dropdown.Item eventKey={majorList[18]}>{majorList[18]}</Dropdown.Item>
+                        <Dropdown.Item eventKey={majorList[19]}>{majorList[19]}</Dropdown.Item>
+                        <Dropdown.Item eventKey={majorList[20]}>{majorList[20]}</Dropdown.Item>
+                        <Dropdown.Item eventKey={majorList[21]}>{majorList[21]}</Dropdown.Item>
+                        <Dropdown.Item eventKey={majorList[22]}>{majorList[22]}</Dropdown.Item>
+                        <Dropdown.Item eventKey={majorList[23]}>{majorList[23]}</Dropdown.Item>
+                        <Dropdown.Item eventKey={majorList[24]}>{majorList[24]}</Dropdown.Item>
+                        <Dropdown.Item eventKey={majorList[25]}>{majorList[25]}</Dropdown.Item>
+                        <Dropdown.Item eventKey={majorList[26]}>{majorList[26]}</Dropdown.Item>
+                        <Dropdown.Item eventKey={majorList[27]}>{majorList[27]}</Dropdown.Item>
+                        <Dropdown.Item eventKey={majorList[28]}>{majorList[28]}</Dropdown.Item>
+                        <Dropdown.Item eventKey={majorList[29]}>{majorList[29]}</Dropdown.Item>
                       </Dropdown.Menu>
                   </Dropdown>
                 </Form.Row>
@@ -372,7 +398,7 @@ function FindBuddies(props) {
                   Preference 1:
                 </Dropdown.Toggle>
                 <Dropdown.Menu>
-                  <Dropdown.Item eventKey="Year">Year</Dropdown.Item>
+                  <Dropdown.Item eventKey="Year">Grade</Dropdown.Item>
                   <Dropdown.Item eventKey="Major">Major</Dropdown.Item>
                   <Dropdown.Item eventKey="CRN">Class</Dropdown.Item>
                 </Dropdown.Menu>
@@ -382,7 +408,7 @@ function FindBuddies(props) {
                   Preference 2:
                 </Dropdown.Toggle>
                 <Dropdown.Menu>
-                  <Dropdown.Item eventKey="Year">Year</Dropdown.Item>
+                  <Dropdown.Item eventKey="Year">Grade</Dropdown.Item>
                   <Dropdown.Item eventKey="Major">Major</Dropdown.Item>
                   <Dropdown.Item eventKey="CRN">Class</Dropdown.Item>
                 </Dropdown.Menu>
@@ -392,7 +418,7 @@ function FindBuddies(props) {
                   Preference 3:
                 </Dropdown.Toggle>
                 <Dropdown.Menu>
-                  <Dropdown.Item eventKey="Year">Year</Dropdown.Item>
+                  <Dropdown.Item eventKey="Year">Grade</Dropdown.Item>
                   <Dropdown.Item eventKey="Major">Major</Dropdown.Item>
                   <Dropdown.Item eventKey="CRN">Class</Dropdown.Item>
                 </Dropdown.Menu>

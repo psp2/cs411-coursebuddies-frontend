@@ -26,6 +26,7 @@ function Login(props) {
   }
 
   function handleLoginSubmit() {
+    // Should fix login eventually and add "real" auth 
     axios
       .get(LOGIN_API_URL, {
         params: {
@@ -36,7 +37,6 @@ function Login(props) {
       .then(
         (response) => {
           if (response.status && response.status == 200) {
-            console.log(response.status);
             props.signIn(true);
             props.setUsername(loginName);
           }
@@ -65,7 +65,6 @@ function Login(props) {
       })
       .then(
         (response) => {
-          console.log(response.status);
           props.signIn(true);
           props.setUsername(signUpName);
         },

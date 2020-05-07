@@ -6,7 +6,7 @@ import BuddyInfoSection from "../BuddyInfoSection/BuddyInfoSection";
 
 function BuddyInfo(props) {
   function displaySection(user) {
-    return <BuddyInfoSection email={user.email} major={user.major} username={user.username} grade={user.year} />;
+    return <BuddyInfoSection email={user.email} major={user.major} username={user.username} grade={user.year} crn={user.crn}/>;
   }
 
   return (

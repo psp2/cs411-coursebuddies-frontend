@@ -13,15 +13,18 @@ import { ADD_USER_RATING_API_URL } from "../../constants";
 import { UPDATE_USER_RATING_API_URL } from "../../constants";
 import { DELETE_USER_RATING_API_URL } from "../../constants";
 import { USER_RATING_API_URL } from "../../constants";
+import { SITE_RATING_API_URL } from "../../constants";
 
 function SearchInfoSection(props) {
   const [userRating, setUserRating] = useState(0);
   const [avgRating, setAvgRating] = useState(0);
   const [myRating, setMyRating] = useState(null);
+  const [webRating, setWebRating] = useState(null);
 
   useEffect(() => {
     getRatings();
     getMyRatings();
+    getRMPRating();
   });
 
   function getRatings() {
@@ -78,7 +81,6 @@ function SearchInfoSection(props) {
       })
       .then(
         (response) => {
-          console.log(response);
           if (response.status == 201) {
             getRatings();
           }
@@ -100,7 +102,6 @@ function SearchInfoSection(props) {
       })
       .then(
         (response) => {
-          console.log(response);
           if (response.status == 201) {
             getRatings();
           }
@@ -132,6 +133,29 @@ function SearchInfoSection(props) {
       );
   }
 
+  function getRMPRating() {
+    axios
+      .get(SITE_RATING_API_URL, {
+        params: {
+          professor: props.section["professor"]
+        }
+      })
+      .then(
+        (response) => {
+          if (response.status == 200) {
+            if(response.data.length == null) {
+              setWebRating(response.data.professor_ratings)
+            } else {
+              setWebRating(response.data[0].professor_ratings)
+            }
+          }
+        },
+        (error) => {
+          console.log(error);
+        }
+      );
+  }
+
   return (
     <div>
       <Jumbotron className="jumbotron-fluid">
@@ -151,7 +175,15 @@ function SearchInfoSection(props) {
               </p>
             </Col>
             <Col className="block-example border-left border-dark ">
-              <h3>Professor Rating: </h3> <p align="center"> {avgRating} </p>
+              {avgRating
+                 ? <div>
+                   <h3>Professor Rating: </h3> <p align="center"> {avgRating} </p>
+                 </div>
+                 :
+                 <div>
+                   <h3>Professor Rating: </h3> <p align="center"> {webRating} </p>
+                 </div>
+               }
               {!myRating && (
                 <div>
                   <Form.Control

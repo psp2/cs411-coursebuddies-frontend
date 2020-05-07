@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 
 import Container from "react-bootstrap/Container";
 import Jumbotron from "react-bootstrap/Jumbotron";
@@ -41,6 +41,14 @@ function BuddyInfoSection(props) {
                             </Row>
                             <Row className="justify-content-center">
                                 {props.grade}
+                            </Row>
+                        </Col>
+                        <Col className="block-example border-left border-dark">
+                            <Row className="justify-content-center">
+                                <b> CRN: </b>
+                            </Row>
+                            <Row className="justify-content-center">
+                                {props.crn}
                             </Row>
                         </Col>
                     </Row>
