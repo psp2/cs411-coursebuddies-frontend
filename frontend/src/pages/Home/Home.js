@@ -15,18 +15,22 @@ import Container from "react-bootstrap/Container";
 
 import Login from "../../components/Login/Login";
 import Search from "../../components/Search/Search";
+import FindBuddies from "../../components/FindBuddies/FindBuddies";
 
 function Home() {
   const [searchMode, setSearchMode] = useState(false);
+  const [buddiesMode, setBuddiesMode] = useState(false);
   const [loggedIn, setLoggedIn] = useState(false);
   const [user, setUser] = useState(null);
 
   function handleSearchClick() {
+    setBuddiesMode(false);
     setSearchMode(true);
   }
 
   function handleStudyBuddiesClick() {
-    console.log("Handle Study Buddies... Later!");
+    setSearchMode(false);
+    setBuddiesMode(true);
   }
 
   return (
@@ -35,29 +39,34 @@ function Home() {
         <Navbar.Brand> CourseBuddy </Navbar.Brand>
         <Navbar.Toggle aria-controls="navbar-toggle" />
         <Navbar.Collapse id="navbar-toggle">
-          <Nav className="ml-auto">
-            <Link className="nav-link"> Home </Link>
+          <Nav 
+            className="ml-auto"
+            activeKey="/"
+            onSelect={searchMode && <Search validUser={loggedIn} name={user} />}
+          >
+            <Nav.Link href="/">Home</Nav.Link>
           </Nav>
         </Navbar.Collapse>
       </Navbar>
 
       <br />
 
-      {!searchMode && (
+      {!searchMode && !buddiesMode && (
         <div className="Home">
           {loggedIn && <div></div>}
           {!loggedIn && <Login signIn={setLoggedIn} setUsername={setUser} />}
         </div>
       )}
       {searchMode && <Search validUser={loggedIn} name={user} />}
+      {buddiesMode && <FindBuddies validUser={loggedIn} name={user} />}
 
-      <Container fluid>
+      {loggedIn && <Container fluid>
         <Row className="justify-content-md-center">
           <CardDeck>
             <Card className="searchButton" style={{ width: "18rem" }}>
               <Card.Img
                 variant="top"
-                src="https://www.computersciencedegreehub.com/wp-content/uploads/2019/03/university-of-illinois-at-urbana-champaign-300x122.png"
+                src="https://uofi.box.com/shared/static/e82hbhqn9i3xrgyv7p68bqr4m76smno1.png"
               />
               <Card.Body>
                 <Card.Title>Search for Classes!</Card.Title>
@@ -73,7 +82,7 @@ function Home() {
             <Card className="findBuddies" style={{ width: "18rem" }}>
               <Card.Img
                 variant="top"
-                src="https://i1.wp.com/hotheartoftexas.com/wp-content/uploads/2017/09/school-book-clipart-1.jpg?fit=800%2C486&ssl=1"
+                src="https://uofi.box.com/shared/static/7n1f8gfl6mnpms3t9euvr3a9y9m7m97q.jpg"
               />
               <Card.Body>
                 <Card.Title>Find Study Buddies!</Card.Title>
@@ -88,7 +97,7 @@ function Home() {
             </Card>
           </CardDeck>
         </Row>
-      </Container>
+      </Container>}
     </div>
   );
 }

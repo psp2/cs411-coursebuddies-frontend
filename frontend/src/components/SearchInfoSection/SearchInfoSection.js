@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 import Container from "react-bootstrap/Container";
 import Jumbotron from "react-bootstrap/Jumbotron";
@@ -12,33 +12,33 @@ import { PROF_USER_RATING_API_URL } from "../../constants";
 import { ADD_USER_RATING_API_URL } from "../../constants";
 import { UPDATE_USER_RATING_API_URL } from "../../constants";
 import { DELETE_USER_RATING_API_URL } from "../../constants";
+import { USER_RATING_API_URL } from "../../constants";
+import { SITE_RATING_API_URL } from "../../constants";
 
 function SearchInfoSection(props) {
   const [userRating, setUserRating] = useState(0);
   const [avgRating, setAvgRating] = useState(0);
   const [myRating, setMyRating] = useState(null);
+  const [webRating, setWebRating] = useState(null);
 
-  var ratings_count = 0;
-  var total_val = 0;
+  useEffect(() => {
+    getRatings();
+    getMyRatings();
+    getRMPRating();
+  });
 
   function getRatings() {
     axios
       .get(PROF_USER_RATING_API_URL, {
         params: {
+          username: props.username,
           crn: props.section["crn"],
         },
       })
       .then(
         (response) => {
           if (response.status == 200) {
-            ratings_count += response.data.length;
-            for (var item in response.data) {
-              if (response.data[item]["username"] == props.username) {
-                setMyRating(response.data[item]["professor_ratings"]);
-              }
-              total_val += response.data[item]["professor_ratings"];
-            }
-            setAvgRating(total_val / ratings_count);
+            setAvgRating(response.data);
           }
         },
         (error) => {
@@ -47,7 +47,25 @@ function SearchInfoSection(props) {
       );
   }
 
-  const avg_rating = getRatings();
+  function getMyRatings() {
+    axios
+      .get(USER_RATING_API_URL, {
+        params: {
+          username: props.username,
+          crn: props.section["crn"],
+        },
+      })
+      .then(
+        (response) => {
+          if (response.status == 200) {
+            setMyRating(response.data);
+          }
+        },
+        (error) => {
+          console.log(error);
+        }
+      );
+  }
 
   function changeUserRating(event) {
     setUserRating(event.target.value);
@@ -63,8 +81,7 @@ function SearchInfoSection(props) {
       })
       .then(
         (response) => {
-          console.log(response);
-          if (response.status == 200) {
+          if (response.status == 201) {
             getRatings();
           }
         },
@@ -85,8 +102,7 @@ function SearchInfoSection(props) {
       })
       .then(
         (response) => {
-          console.log(response);
-          if (response.status == 200) {
+          if (response.status == 201) {
             getRatings();
           }
         },
@@ -106,9 +122,32 @@ function SearchInfoSection(props) {
       })
       .then(
         (response) => {
-          if (response.status == 200) {
+          if (response.status == 201) {
             getRatings();
             setMyRating(null);
+          }
+        },
+        (error) => {
+          console.log(error);
+        }
+      );
+  }
+
+  function getRMPRating() {
+    axios
+      .get(SITE_RATING_API_URL, {
+        params: {
+          professor: props.section["professor"]
+        }
+      })
+      .then(
+        (response) => {
+          if (response.status == 200) {
+            if(response.data.length == null) {
+              setWebRating(response.data.professor_ratings)
+            } else {
+              setWebRating(response.data[0].professor_ratings)
+            }
           }
         },
         (error) => {
@@ -136,7 +175,15 @@ function SearchInfoSection(props) {
               </p>
             </Col>
             <Col className="block-example border-left border-dark ">
-              <h3>Professor Rating: </h3> <p align="center"> {avgRating} </p>
+              {avgRating
+                 ? <div>
+                   <h3>Professor Rating: </h3> <p align="center"> {avgRating} </p>
+                 </div>
+                 :
+                 <div>
+                   <h3>Professor Rating: </h3> <p align="center"> {webRating} </p>
+                 </div>
+               }
               {!myRating && (
                 <div>
                   <Form.Control

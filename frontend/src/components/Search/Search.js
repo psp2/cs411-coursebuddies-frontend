@@ -38,8 +38,8 @@ function Search(props) {
       .then(
         (response) => {
           if (response.status == 200) {
-            setSearchResults((searchResults) => [
-              ...searchResults,
+            setSearchResults([]);
+            setSearchResults([
               JSON.stringify(response.data),
             ]);
           }
